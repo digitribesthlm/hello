@@ -5,68 +5,44 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function Login() {
-  const [error, setError] = useState('')
   const router = useRouter()
+  const [error, setError] = useState('')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError('')
+    const formData = new FormData(e.currentTarget)
+    
+    const response = await signIn('credentials', {
+      email: formData.get('email'),
+      password: formData.get('password'),
+      redirect: false
+    })
 
-    try {
-      const result = await signIn('credentials', {
-        username: e.target.username.value,
-        password: e.target.password.value,
-        redirect: false
-      })
-
-      console.log('Login attempt result:', result)
-
-      if (result?.error) {
-        setError('Invalid username or password')
-      } else {
-        router.push('/dashboard')
-        router.refresh()
-      }
-    } catch (error) {
-      console.error('Login error:', error)
-      setError('An error occurred during login')
+    if (response?.error) {
+      setError('Invalid credentials')
+    } else {
+      router.push('/dashboard')
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
-          </h2>
-        </div>
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
+        <h2 className="text-center text-3xl font-bold">Sign in to your account</h2>
+        
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="text-red-500 text-center">
-              {error}
-            </div>
-          )}
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="username" className="sr-only">
-                Username
-              </label>
               <input
-                id="username"
-                name="username"
-                type="text"
+                name="email"
+                type="email"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Username"
+                placeholder="Email address"
               />
             </div>
             <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
               <input
-                id="password"
                 name="password"
                 type="password"
                 required
@@ -75,6 +51,12 @@ export default function Login() {
               />
             </div>
           </div>
+
+          {error && (
+            <div className="text-red-500 text-sm text-center">
+              {error}
+            </div>
+          )}
 
           <div>
             <button
