@@ -24,22 +24,27 @@ export async function GET() {
 
 export async function POST(request) {
   try {
+    const keyword = await request.json()
     const { db } = await connectToDatabase()
-    const data = await request.json()
-    
-    const result = await db.collection('keywords').insertOne({
-      ...data,
-      created_at: new Date()
-    })
 
-    return new Response(JSON.stringify(result), {
-      status: 201,
+    // Add created_at timestamp
+    keyword.created_at = new Date()
+
+    const result = await db.collection('keywords').insertOne(keyword)
+
+    return new Response(JSON.stringify({ 
+      success: true, 
+      keywordId: result.insertedId 
+    }), {
+      status: 200,
       headers: { 'Content-Type': 'application/json' }
     })
 
   } catch (error) {
-    console.error('Error creating keyword:', error)
-    return new Response(JSON.stringify({ error: 'Failed to create keyword' }), {
+    console.error('Error adding keyword:', error)
+    return new Response(JSON.stringify({ 
+      error: 'Failed to add keyword' 
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     })
