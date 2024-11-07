@@ -1,29 +1,30 @@
-'use client'
+'use client' // Necessary for client-side component
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
+import Link from 'next/link' // Importing correctly from next/link
 
 export default function KeywordsPage() {
+  // State definitions
   const [keywords, setKeywords] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [kampanjFilter, setKampanjFilter] = useState('all')
-  const [adGroupFilter, setAdGroupFilter] = useState('all')
   const [matchTypeFilter, setMatchTypeFilter] = useState('all')
   const [currentPage, setCurrentPage] = useState(1)
-  const [showActiveOnly, setShowActiveOnly] = useState(false)
   const itemsPerPage = 50
 
+  // useEffect for fetching keyword data
   useEffect(() => {
     async function fetchData() {
       try {
         const res = await fetch('/api/keywords')
         if (!res.ok) throw new Error('Failed to fetch keywords')
         const data = await res.json()
-        setKeywords(Array.isArray(data) ? data : [])
+        console.log('Fetched data:', data) // Debugging log
+        setKeywords(Array.isArray(data) ? data : []) // Ensure the data is an array
       } catch (error) {
-        console.error('Error:', error)
+        console.error('Error fetching keywords:', error)
         setKeywords([])
       } finally {
         setLoading(false)
@@ -40,11 +41,23 @@ export default function KeywordsPage() {
     )
   }
 
+  // Handle filtering logic
+  const filteredKeywords = keywords.filter(keyword =>
+    keyword.sokord?.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    (statusFilter === 'all' || keyword.status === statusFilter) &&
+    (kampanjFilter === 'all' || keyword.kampanj === kampanjFilter) &&
+    (matchTypeFilter === 'all' || keyword.matchType === matchTypeFilter)
+  )
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredKeywords.length / itemsPerPage)
+  const currentKeywords = filteredKeywords.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+
   return (
     <div className="p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Keyword Management</h1>
-        
+
         {/* Filters */}
         <div className="bg-white rounded-lg shadow p-4 mb-6">
           <input
@@ -54,8 +67,9 @@ export default function KeywordsPage() {
             placeholder="Search keywords..."
             className="w-full p-2 border rounded mb-4"
           />
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Status Filter */}
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
@@ -66,6 +80,7 @@ export default function KeywordsPage() {
               <option value="Pausad">Paused</option>
             </select>
 
+            {/* Campaign Filter */}
             <select
               value={kampanjFilter}
               onChange={(e) => setKampanjFilter(e.target.value)}
@@ -77,6 +92,7 @@ export default function KeywordsPage() {
               ))}
             </select>
 
+            {/* Match Type Filter */}
             <select
               value={matchTypeFilter}
               onChange={(e) => setMatchTypeFilter(e.target.value)}
@@ -101,33 +117,25 @@ export default function KeywordsPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {keywords
-                .filter(keyword => 
-                  keyword.sokord?.toLowerCase().includes(searchTerm.toLowerCase()) &&
-                  (statusFilter === 'all' || keyword.status === statusFilter) &&
-                  (kampanjFilter === 'all' || keyword.kampanj === kampanjFilter) &&
-                  (matchTypeFilter === 'all' || keyword.matchType === matchTypeFilter)
-                )
-                .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                .map((keyword) => (
-                  <tr key={keyword._id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{keyword.sokord}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{keyword.kampanj}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        keyword.status === 'Aktiverad' ? 'bg-green-100 text-green-800' : 
-                        'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {keyword.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+              {currentKeywords.map((keyword) => (
+                <tr key={keyword._id}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{keyword.sokord}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{keyword.kampanj}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      keyword.status === 'Aktiverad' ? 'bg-green-100 text-green-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {keyword.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
 
-        {/* Pagination */}
+        {/* Pagination Controls */}
         <div className="flex justify-between items-center mt-4">
           <button
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
@@ -137,11 +145,11 @@ export default function KeywordsPage() {
             Previous
           </button>
           <span>
-            Page {currentPage} of {Math.ceil(keywords.length / itemsPerPage)}
+            Page {currentPage} of {totalPages}
           </span>
           <button
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(keywords.length / itemsPerPage)))}
-            disabled={currentPage === Math.ceil(keywords.length / itemsPerPage)}
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
             className="px-4 py-2 border rounded disabled:opacity-50"
           >
             Next
