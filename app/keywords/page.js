@@ -1,6 +1,5 @@
 // KeywordsPage.js
 import { useState, useEffect } from 'react';
-import Link from 'next/link'; // Ensure this is used if kept
 
 export default function KeywordsPage() {
   const [data, setData] = useState({ keywords: [], loading: true, error: null });
@@ -21,11 +20,7 @@ export default function KeywordsPage() {
     fetchData();
   }, []);
 
-  const {
-    keywords,
-    loading,
-    error,
-  } = data;
+  const { keywords, loading, error } = data;
 
   if (loading) {
     return (
@@ -39,13 +34,11 @@ export default function KeywordsPage() {
     return <div>Error: {error}</div>;
   }
 
-  // Simplified filters to reduce potential complexity
   const [searchTerm, setSearchTerm] = useState('');
   const filteredKeywords = keywords.filter((keyword) =>
     keyword.sokord?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Simplified pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 50;
   const totalPages = Math.ceil(filteredKeywords.length / itemsPerPage);
@@ -56,7 +49,6 @@ export default function KeywordsPage() {
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Keyword Management</h1>
 
-        {/* Simplified Search Filter */}
         <div className="bg-white rounded-lg shadow p-4 mb-6">
           <input
             type="text"
@@ -67,7 +59,6 @@ export default function KeywordsPage() {
           />
         </div>
 
-        {/* Keywords Table */}
         <div className="bg-white shadow overflow-x-auto rounded-lg">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -96,31 +87,26 @@ export default function KeywordsPage() {
           </table>
         </div>
 
-        {/* Simplified Pagination Controls */}
         <div className="flex justify-between items-center mt-4">
-            <button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-4 py-2 border rounded disabled:opacity-50"
-            >
-              Previous
-            </button>
-            <span>
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 border rounded disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
+          <button
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 border rounded disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 border rounded disabled:opacity-50"
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>
   );
 }
-
-// Ensure the component is exported as default
-export default KeywordsPage;
