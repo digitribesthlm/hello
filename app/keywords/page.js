@@ -30,6 +30,14 @@ export default function KeywordsPage() {
     return <Layout><div>Error: {data.error}</div></Layout>;
   }
 
+  if (data.loading) {
+    return <Layout><div>Loading...</div></Layout>;
+  }
+
+  if (data.error) {
+    return <Layout><div>Error: {data.error}</div></Layout>;
+  }
+
   return (
     <Layout>
       <div>
@@ -42,30 +50,6 @@ export default function KeywordsPage() {
       </div>
     </Layout>
   );
-
-  const { keywords, loading, error } = data;
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  const [searchTerm, setSearchTerm] = useState('');
-  const filteredKeywords = keywords.filter((keyword) =>
-    keyword.sokord?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 50;
-  const totalPages = Math.ceil(filteredKeywords.length / itemsPerPage);
-  const currentKeywords = filteredKeywords.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <div className="p-4 md:p-8">
