@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Layout from '../components/Layout'
+import Layout from '@/components/Layout'
 
 export default function KeywordsPage() {
   const [data, setData] = useState({ keywords: [], loading: true, error: null });
@@ -26,6 +26,9 @@ export default function KeywordsPage() {
     return <Layout><div>Loading...</div></Layout>;
   }
 
+  if (data.error) {
+    return <Layout><div>Error: {data.error}</div></Layout>;
+  }
 
 
 
