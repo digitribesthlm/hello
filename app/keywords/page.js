@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Layout from '../components/Layout'  // <-- This was the issue
+import Layout from '../components/Layout'
 import Link from 'next/link'
 
 export default function KeywordsPage() {
@@ -102,7 +102,6 @@ export default function KeywordsPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keyword</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Campaign</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -125,14 +124,6 @@ export default function KeywordsPage() {
                         }`}>
                           {keyword.status}
                         </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <button
-                          onClick={() => handleStatusToggle(keyword)}
-                          className="text-blue-600 hover:text-blue-900"
-                        >
-                          {keyword.status === 'Aktiverad' ? 'Pause' : 'Activate'}
-                        </button>
                       </td>
                     </tr>
                   ))}
