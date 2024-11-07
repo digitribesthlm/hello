@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Layout from '../../components/Layout'  // <-- This was the issue
+import Layout from '../components/Layout'  // <-- This was the issue
 import Link from 'next/link'
 
 export default function KeywordsPage() {
