@@ -65,55 +65,22 @@ export default function Layout({ children }) {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-gray-300">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Company Info */}
-            <div>
-              <h3 className="text-white font-semibold mb-3">Keyword Manager</h3>
-              <p className="text-sm">
-                Efficient keyword management tool for your Google Ads campaigns.
-              </p>
-            </div>
+      <footer className="mt-auto py-8 text-center">
+        <div className="mb-4">
+          <h2 className="text-blue-600 text-xl font-semibold">DigiTribe</h2>
+          <p className="text-gray-600 text-sm">Your partner for digital growth across Europe.</p>
+        </div>
 
-            {/* Quick Links */}
-            <div>
-              <h3 className="text-white font-semibold mb-3">Quick Links</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <Link href="/overview" className="hover:text-white">Overview</Link>
-                </li>
-                <li>
-                  <Link href="/dashboard" className="hover:text-white">Keywords</Link>
-                </li>
-                <li>
-                  <Link href="/match-types" className="hover:text-white">Match Types Guide</Link>
-                </li>
-              </ul>
-            </div>
+        <div className="flex justify-center space-x-4 mb-4">
+          <a href="/privacy" className="text-gray-600 hover:text-gray-800 text-sm">Privacy Policy</a>
+          <span className="text-gray-300">|</span>
+          <a href="/terms" className="text-gray-600 hover:text-gray-800 text-sm">Terms of Service</a>
+          <span className="text-gray-300">|</span>
+          <a href="/cookies" className="text-gray-600 hover:text-gray-800 text-sm">Cookie Policy</a>
+        </div>
 
-            {/* Contact */}
-            <div>
-              <h3 className="text-white font-semibold mb-3">Contact</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <a href="mailto:support@example.com" className="hover:text-white">
-                    support@example.com
-                  </a>
-                </li>
-                <li>
-                  <a href="tel:+1234567890" className="hover:text-white">
-                    +123 456 7890
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Copyright */}
-          <div className="mt-8 pt-8 border-t border-gray-700 text-sm text-center">
-            <p>&copy; {new Date().getFullYear()} Keyword Manager. All rights reserved.</p>
-          </div>
+        <div className="text-gray-500 text-sm">
+          © 2024 DigiTribe. All rights reserved.
         </div>
       </footer>
     </div>

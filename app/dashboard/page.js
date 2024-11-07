@@ -13,8 +13,10 @@ export default function Dashboard() {
   const [matchTypeFilter, setMatchTypeFilter] = useState('all')
   const [currentPage, setCurrentPage] = useState(1)
   const [modalKeyword, setModalKeyword] = useState(null)
-  const [showRemoved, setShowRemoved] = useState(false)
+  const [showActiveOnly, setShowActiveOnly] = useState(false)
   const itemsPerPage = 50
+  const [campaigns, setCampaigns] = useState([])
+  const [adGroups, setAdGroups] = useState([])
 
   useEffect(() => {
     async function fetchData() {
@@ -31,6 +33,34 @@ export default function Dashboard() {
     fetchData()
   }, [])
 
+  useEffect(() => {
+    async function fetchCampaigns() {
+      try {
+        const res = await fetch('/api/kampanjer')
+        const data = await res.json()
+        console.log('Fetched campaigns:', data)
+        setCampaigns(data)
+      } catch (error) {
+        console.error('Error fetching campaigns:', error)
+      }
+    }
+    fetchCampaigns()
+  }, [])
+
+  useEffect(() => {
+    async function fetchAdGroups() {
+      try {
+        const res = await fetch('/api/adgroups')
+        const data = await res.json()
+        console.log('Fetched ad groups:', data)
+        setAdGroups(data)
+      } catch (error) {
+        console.error('Error fetching ad groups:', error)
+      }
+    }
+    fetchAdGroups()
+  }, [])
+
   // Get unique values for filters
   const uniqueKampanjer = [...new Set(keywords.map(k => k.kampanj))].sort()
   const uniqueMatchTypes = [...new Set(keywords.map(k => k.matchType))].sort()
@@ -43,8 +73,19 @@ export default function Dashboard() {
     const matchesKampanj = kampanjFilter === 'all' || keyword.kampanj === kampanjFilter
     const matchesAnnonsgrupp = adGroupFilter === 'all' || keyword.annonsgrupp === adGroupFilter
     const matchesMatchType = matchTypeFilter === 'all' || keyword.matchType === matchTypeFilter
-    const isNotRemoved = showRemoved ? true : keyword.status !== 'Removed'
-    return matchesSearch && matchesStatus && matchesKampanj && matchesAnnonsgrupp && matchesMatchType && isNotRemoved
+    
+    const campaign = campaigns.find(c => 
+      c.name === keyword.kampanj && 
+      c.adGroup === keyword.annonsgrupp
+    )
+    
+    const hasViews = campaign ? Number(campaign.visningar) > 0 : false
+    
+    const isNotRemoved = keyword.status !== 'Removed'
+    
+    return matchesSearch && matchesStatus && matchesKampanj && 
+           matchesAnnonsgrupp && matchesMatchType && isNotRemoved && 
+           (!showActiveOnly || hasViews)
   })
 
   // Pagination
@@ -234,21 +275,20 @@ export default function Dashboard() {
                   <option value="Pausad">Pausad</option>
                 </select>
               </div>
-            </div>
-          </div>
 
-          {/* Show/Hide removed keywords toggle */}
-          <div className="flex items-center space-x-2 mb-4">
-            <input
-              type="checkbox"
-              id="showRemoved"
-              checked={showRemoved}
-              onChange={(e) => setShowRemoved(e.target.checked)}
-              className="rounded border-gray-300"
-            />
-            <label htmlFor="showRemoved" className="text-sm text-gray-600">
-              Show removed keywords
-            </label>
+              <div className="lg:col-span-5 flex items-center mt-2">
+                <input
+                  type="checkbox"
+                  id="showActiveOnly"
+                  checked={showActiveOnly}
+                  onChange={(e) => setShowActiveOnly(e.target.checked)}
+                  className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                />
+                <label htmlFor="showActiveOnly" className="ml-2 text-sm text-gray-700">
+                  Show only active campaigns (with views)
+                </label>
+              </div>
+            </div>
           </div>
 
           {/* Table */}

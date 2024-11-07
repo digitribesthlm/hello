@@ -13,16 +13,6 @@ export default function MatchTypesGuide() {
           willMatch: ['röda skor', 'röd sko'],
           wontMatch: ['billiga röda skor', 'röda sportskor', 'röda och svarta skor']
         }
-      ],
-      pros: [
-        'Högst relevans',
-        'Bäst konverteringsgrad',
-        'Mer kontroll över när annonsen visas'
-      ],
-      cons: [
-        'Lägre sökvolym',
-        'Kan missa relevanta sökningar',
-        'Kräver fler nyckelord för bred täckning'
       ]
     },
     {
@@ -34,16 +24,6 @@ export default function MatchTypesGuide() {
           willMatch: ['köpa röda skor', 'röda skor online', 'billiga röda skor'],
           wontMatch: ['skor röda', 'röda sneakers', 'röda och svarta skor']
         }
-      ],
-      pros: [
-        'Bra balans mellan relevans och räckvidd',
-        'Fångar upp relevanta längre sökfraser',
-        'Fortfarande god kontroll över när annonsen visas'
-      ],
-      cons: [
-        'Kan visa annonser för mindre relevanta sökningar',
-        'Dyrare än exakt matchning',
-        'Kräver noggrann övervakning av söktermer'
       ]
     },
     {
@@ -55,16 +35,6 @@ export default function MatchTypesGuide() {
           willMatch: ['röda sneakers', 'röda kängor', 'röda damskor', 'röd sko'],
           wontMatch: ['skor', 'röda kläder', 'röda accessoarer']
         }
-      ],
-      pros: [
-        'Störst räckvidd',
-        'Fångar upp oväntade relevanta sökningar',
-        'Bra för att upptäcka nya nyckelord'
-      ],
-      cons: [
-        'Lägst relevans',
-        'Kan vara kostsamt',
-        'Kräver mycket övervakning och negativa nyckelord'
       ]
     }
   ]
@@ -118,36 +88,6 @@ export default function MatchTypesGuide() {
                         </div>
                       </div>
                     ))}
-                  </div>
-
-                  {/* Pros & Cons */}
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <h3 className="font-medium text-green-600 mb-2">Pros</h3>
-                      <ul className="space-y-1">
-                        {matchType.pros.map((pro, index) => (
-                          <li key={index} className="flex items-start">
-                            <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span className="text-gray-600">{pro}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-red-600 mb-2">Cons</h3>
-                      <ul className="space-y-1">
-                        {matchType.cons.map((con, index) => (
-                          <li key={index} className="flex items-start">
-                            <svg className="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                            <span className="text-gray-600">{con}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
                   </div>
                 </div>
               </div>

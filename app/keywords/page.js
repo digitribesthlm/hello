@@ -16,6 +16,8 @@ export default function KeywordsPage() {
   const [modalKeyword, setModalKeyword] = useState(null)
   const [showRemoved, setShowRemoved] = useState(false)
   const itemsPerPage = 50
+  const [campaigns, setCampaigns] = useState([])
+  const [showActiveOnly, setShowActiveOnly] = useState(false)
 
   useEffect(() => {
     async function fetchData() {
@@ -30,6 +32,15 @@ export default function KeywordsPage() {
       }
     }
     fetchData()
+  }, [])
+
+  useEffect(() => {
+    async function fetchCampaigns() {
+      const res = await fetch('/api/kampanjer')
+      const data = await res.json()
+      setCampaigns(data)
+    }
+    fetchCampaigns()
   }, [])
 
   // Get unique values for filters
@@ -118,6 +129,10 @@ export default function KeywordsPage() {
     setModalKeyword(null)
   }
 
+  const filteredCampaigns = showActiveOnly 
+    ? campaigns.filter(campaign => campaign.visningar > 0)
+    : campaigns
+
   if (loading) return <Layout><div className="p-4">Loading...</div></Layout>
 
   return (
@@ -140,6 +155,64 @@ export default function KeywordsPage() {
 
           {/* Rest of the existing keyword management UI */}
           {/* ... filters, table, modals, etc. ... */}
+
+          <div className="max-w-7xl mx-auto p-4">
+            <div className="flex flex-col space-y-4 mb-6">
+              <h1 className="text-2xl font-bold">Sökord</h1>
+              
+              {/* Search input */}
+              <input
+                type="text"
+                placeholder="Search sökord..."
+                className="..."
+              />
+
+              {/* Add the active campaigns checkbox here */}
+              <div className="flex items-center bg-white p-3 rounded-lg shadow">
+                <input
+                  type="checkbox"
+                  checked={showActiveOnly}
+                  onChange={(e) => setShowActiveOnly(e.target.checked)}
+                  className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                />
+                <label className="ml-2 text-sm text-gray-700">
+                  Show only active campaigns
+                </label>
+              </div>
+
+              {/* Match Type dropdown */}
+              <select className="...">
+                <option>All Match Types</option>
+                ...
+              </select>
+
+              {/* Rest of your filters */}
+              ...
+            </div>
+
+            <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ad Group</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Views</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredCampaigns.map((campaign) => (
+                    <tr key={campaign._id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{campaign.name}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{campaign.adGroup}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{campaign.status}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{campaign.visningar || 0}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </Layout>
