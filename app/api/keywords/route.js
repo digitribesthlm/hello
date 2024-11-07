@@ -1,9 +1,9 @@
+// /app/api/keywords/route.js
 import { connectToDatabase } from '@/lib/mongodb'
 
 export async function GET() {
   try {
     const { db } = await connectToDatabase()
-    
     const keywords = await db.collection('keywords')
       .find({})
       .sort({ created_at: -1 })
@@ -12,7 +12,6 @@ export async function GET() {
     return new Response(JSON.stringify(keywords), {
       headers: { 'Content-Type': 'application/json' }
     })
-
   } catch (error) {
     console.error('Error fetching keywords:', error)
     return new Response(JSON.stringify({ error: 'Failed to fetch keywords' }), {
@@ -39,7 +38,6 @@ export async function POST(request) {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     })
-
   } catch (error) {
     console.error('Error adding keyword:', error)
     return new Response(JSON.stringify({ 
@@ -49,4 +47,4 @@ export async function POST(request) {
       headers: { 'Content-Type': 'application/json' }
     })
   }
-} 
+}
