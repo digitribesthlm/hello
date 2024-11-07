@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Layout from '../components/Layout' 
+import Layout from '@/components/Layout'
 
 export default function KeywordsPage() {
   const [data, setData] = useState({ keywords: [], loading: true, error: null });
