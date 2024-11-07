@@ -15,9 +15,9 @@ export default function KeywordsPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [modalKeyword, setModalKeyword] = useState(null)
   const [showRemoved, setShowRemoved] = useState(false)
-  const itemsPerPage = 50
   const [campaigns, setCampaigns] = useState([])
   const [showActiveOnly, setShowActiveOnly] = useState(false)
+  const itemsPerPage = 50
 
   useEffect(() => {
     async function fetchData() {
@@ -36,9 +36,13 @@ export default function KeywordsPage() {
 
   useEffect(() => {
     async function fetchCampaigns() {
-      const res = await fetch('/api/kampanjer')
-      const data = await res.json()
-      setCampaigns(data)
+      try {
+        const res = await fetch('/api/kampanjer')
+        const data = await res.json()
+        setCampaigns(data)
+      } catch (error) {
+        console.error('Error fetching campaigns:', error)
+      }
     }
     fetchCampaigns()
   }, [])
@@ -50,7 +54,7 @@ export default function KeywordsPage() {
 
   // Filter logic
   const filteredKeywords = keywords.filter(keyword => {
-    const matchesSearch = keyword.sokord.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesSearch = keyword.sokord?.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesStatus = statusFilter === 'all' || keyword.status === statusFilter
     const matchesKampanj = kampanjFilter === 'all' || keyword.kampanj === kampanjFilter
     const matchesAnnonsgrupp = adGroupFilter === 'all' || keyword.annonsgrupp === adGroupFilter
@@ -66,7 +70,6 @@ export default function KeywordsPage() {
     currentPage * itemsPerPage
   )
 
-  // Status toggle function
   const handleStatusToggle = async (keyword) => {
     const newStatus = keyword.status === 'Aktiverad' ? 'Pausad' : 'Aktiverad'
     try {
@@ -94,12 +97,10 @@ export default function KeywordsPage() {
     }
   }
 
-  // Remove keyword function
   const handleRemoveKeyword = async (keyword) => {
     setModalKeyword(keyword)
   }
 
-  // Confirm remove function
   const confirmRemove = async () => {
     if (!modalKeyword) return
 
@@ -129,17 +130,21 @@ export default function KeywordsPage() {
     setModalKeyword(null)
   }
 
-  const filteredCampaigns = showActiveOnly 
-    ? campaigns.filter(campaign => campaign.visningar > 0)
-    : campaigns
-
-  if (loading) return <Layout><div className="p-4">Loading...</div></Layout>
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+        </div>
+      </Layout>
+    )
+  }
 
   return (
     <Layout>
       <div className="p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
-          {/* Add link back to dashboard */}
+          {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold">Keyword Management</h1>
             <Link 
@@ -153,68 +158,163 @@ export default function KeywordsPage() {
             </Link>
           </div>
 
-          {/* Rest of the existing keyword management UI */}
-          {/* ... filters, table, modals, etc. ... */}
-
-          <div className="max-w-7xl mx-auto p-4">
-            <div className="flex flex-col space-y-4 mb-6">
-              <h1 className="text-2xl font-bold">Sökord</h1>
-              
-              {/* Search input */}
+          {/* Filters */}
+          <div className="bg-white rounded-lg shadow p-4 mb-6 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Search */}
               <input
                 type="text"
-                placeholder="Search sökord..."
-                className="..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search keywords..."
+                className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
 
-              {/* Add the active campaigns checkbox here */}
-              <div className="flex items-center bg-white p-3 rounded-lg shadow">
-                <input
-                  type="checkbox"
-                  checked={showActiveOnly}
-                  onChange={(e) => setShowActiveOnly(e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                />
-                <label className="ml-2 text-sm text-gray-700">
-                  Show only active campaigns
-                </label>
-              </div>
-
-              {/* Match Type dropdown */}
-              <select className="...">
-                <option>All Match Types</option>
-                ...
+              {/* Status Filter */}
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">All Statuses</option>
+                <option value="Aktiverad">Aktiverad</option>
+                <option value="Pausad">Pausad</option>
               </select>
 
-              {/* Rest of your filters */}
-              ...
+              {/* Campaign Filter */}
+              <select
+                value={kampanjFilter}
+                onChange={(e) => setKampanjFilter(e.target.value)}
+                className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">All Campaigns</option>
+                {uniqueKampanjer.map(kampanj => (
+                  <option key={kampanj} value={kampanj}>{kampanj}</option>
+                ))}
+              </select>
+
+              {/* Match Type Filter */}
+              <select
+                value={matchTypeFilter}
+                onChange={(e) => setMatchTypeFilter(e.target.value)}
+                className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">All Match Types</option>
+                {uniqueMatchTypes.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
             </div>
 
-            <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ad Group</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Views</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredCampaigns.map((campaign) => (
-                    <tr key={campaign._id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{campaign.name}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{campaign.adGroup}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{campaign.status}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{campaign.visningar || 0}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            {/* Show Active Only Toggle */}
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={showActiveOnly}
+                onChange={(e) => setShowActiveOnly(e.target.checked)}
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <label className="text-sm text-gray-700">Show only active campaigns</label>
             </div>
+          </div>
+
+          {/* Keywords Table */}
+          <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keyword</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Campaign</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ad Group</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Match Type</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {paginatedKeywords.map((keyword) => (
+                  <tr key={keyword._id}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{keyword.sokord}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{keyword.kampanj}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{keyword.annonsgrupp}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{keyword.matchType}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        keyword.status === 'Aktiverad' ? 'bg-green-100 text-green-800' :
+                        keyword.status === 'Pausad' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>
+                        {keyword.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <button
+                        onClick={() => handleStatusToggle(keyword)}
+                        className="text-blue-600 hover:text-blue-900 mr-3"
+                      >
+                        {keyword.status === 'Aktiverad' ? 'Pause' : 'Activate'}
+                      </button>
+                      <button
+                        onClick={() => handleRemoveKeyword(keyword)}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="flex justify-between items-center mt-4">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 border rounded-lg disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 border rounded-lg disabled:opacity-50"
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Remove Confirmation Modal */}
+      {modalKeyword && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 max-w-sm mx-auto">
+            <h3 className="text-lg font-medium mb-4">Confirm Removal</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to remove the keyword &quot;{modalKeyword.sokord}&quot;?
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setModalKeyword(null)}
+                className="px-4 py-2 border rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmRemove}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   )
-} 
+}
