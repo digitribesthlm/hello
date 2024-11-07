@@ -38,14 +38,7 @@ export default function Layout({ children }) {
               >
                 Add Keywords
               </Link>
-              <Link 
-                href="/match-types" 
-                className={`px-3 py-2 rounded-md text-sm font-medium ${
-                  pathname === '/match-types' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700'
-                }`}
-              >
-                Match Types Guide
-              </Link>
+              
             </div>
             <div className="flex items-center">
               <button
