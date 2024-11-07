@@ -1,5 +1,7 @@
-// KeywordsPage.js
-import { useState, useEffect } from 'react';
+'use client'
+
+import { useState, useEffect } from 'react'
+import Layout from '@/app/components/Layout'
 
 export default function KeywordsPage() {
   const [data, setData] = useState({ keywords: [], loading: true, error: null });
@@ -12,13 +14,34 @@ export default function KeywordsPage() {
           throw new Error('Network response was not ok');
         }
         const jsonData = await response.json();
-        setData({ keywords: Array.isArray(jsonData) ? jsonData : [], loading: false, error: null });
+        setData({ keywords: Array.isArray(jsonData) ? jsonData : [], loading: false, error: null })
       } catch (error) {
         setData({ keywords: [], loading: false, error: error.message });
       }
     };
     fetchData();
   }, []);
+
+  if (data.loading) {
+    return <Layout><div>Loading...</div></Layout>;
+  }
+
+  if (data.error) {
+    return <Layout><div>Error: {data.error}</div></Layout>;
+  }
+
+  return (
+    <Layout>
+      <div>
+        <h1>Keywords</h1>
+        <ul>
+          {data.keywords.map((keyword) => (
+            <li key={keyword._id}>{keyword.sokord}</li>
+          ))}
+        </ul>
+      </div>
+    </Layout>
+  );
 
   const { keywords, loading, error } = data;
 
