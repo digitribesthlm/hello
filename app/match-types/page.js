@@ -79,7 +79,7 @@ export default function MatchTypesGuide() {
                               <li key={i}>{term}</li>
                             ))}
                           </ul>
-                          <p className="text-sm text-gray-600 mt-2 mb-2">Won't match:</p>
+                          <p className="text-sm text-gray-600 mt-2 mb-2">Won&apos;t match:</p>
                           <ul className="list-disc list-inside text-red-600 text-sm ml-4">
                             {example.wontMatch.map((term, i) => (
                               <li key={i}>{term}</li>
