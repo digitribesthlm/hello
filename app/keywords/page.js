@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 
-const Layout = dynamic(() => import('@/components/Layout'), { ssr: false })
+const Layout = dynamic(() => import('../components/Layout'), { ssr: false })
 
 export default function KeywordsPage() {
   const [data, setData] = useState({ keywords: [], loading: true, error: null });
