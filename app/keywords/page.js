@@ -2,11 +2,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import dynamic from 'next/dynamic'
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/router'
-
-const Layout = dynamic(() => import('../components/Layout'), { ssr: false })
+import { useRouter } from 'next/navigation'
+import Layout from '../components/Layout'
 
 export default function KeywordsPage() {
   const [data, setData] = useState({ keywords: [], loading: true, error: null });
@@ -14,15 +12,12 @@ export default function KeywordsPage() {
   const router = useRouter();
 
   useEffect(() => {
-    console.log('Session status:', status);
     if (status === 'unauthenticated') {
-      console.log('Redirecting to login');
       router.push('/login');
       return;
     }
 
     if (typeof window !== 'undefined') {
-      // Fetch data only on the client side
       const fetchData = async () => {
         try {
           const response = await fetch('/api/keywords');
@@ -37,7 +32,7 @@ export default function KeywordsPage() {
       };
       fetchData();
     }
-  }, [status]);
+  }, [status, router]);
 
   if (status === 'loading' || data.loading) {
     return <Layout><div>Loading...</div></Layout>;
