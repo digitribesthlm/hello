@@ -2,12 +2,13 @@
 
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { signOut } from 'next-auth/react'
 
 export default function Header() {
   const router = useRouter()
 
   const handleLogout = () => {
-    router.push('/')
+    signOut({ callbackUrl: '/' });
   }
 
   return (
